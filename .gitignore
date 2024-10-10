@@ -59,3 +59,9 @@ UpgradeLog*.htm
 # Package Files
 *.nupkg
 *.snupkg
+
+# debug files and logs
+*.llk
+*.log
+*.pdb
+*.tlog

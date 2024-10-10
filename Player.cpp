@@ -19,25 +19,42 @@ enum PlayerAnims
 void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {
 	bJumping = false;
-	spritesheet.loadFromFile("images/bub.png", TEXTURE_PIXEL_FORMAT_RGBA);
-	sprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(0.25, 0.25), &spritesheet, &shaderProgram);
-	sprite->setNumberAnimations(4);
+	float ratio = 1.0f / 30.0f;
+	spritesheet.loadFromFile("images/mf.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	sprite = Sprite::createSprite(glm::ivec2(32, 48), glm::vec2(ratio, 0.05f), &spritesheet, &shaderProgram);
+	sprite->setNumberAnimations(10);
 	
 		sprite->setAnimationSpeed(STAND_LEFT, 8);
-		sprite->addKeyframe(STAND_LEFT, glm::vec2(0.f, 0.f));
+		sprite->addKeyframe(STAND_LEFT, glm::vec2(1.0f, 0.f));
 		
 		sprite->setAnimationSpeed(STAND_RIGHT, 8);
-		sprite->addKeyframe(STAND_RIGHT, glm::vec2(0.25f, 0.f));
+		sprite->addKeyframe(STAND_RIGHT, glm::vec2(0.f, 0.f));
 		
-		sprite->setAnimationSpeed(MOVE_LEFT, 8);
-		sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.f));
-		sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.25f));
-		sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.5f));
+		sprite->setAnimationSpeed(MOVE_LEFT, 20);
+		sprite->addKeyframe(MOVE_LEFT, glm::vec2(1-ratio*2, 0.f));
+		sprite->addKeyframe(MOVE_LEFT, glm::vec2(1-ratio*3, 0.f));
+		sprite->addKeyframe(MOVE_LEFT, glm::vec2(1-ratio*4, 0.f));
+		sprite->addKeyframe(MOVE_LEFT, glm::vec2(1-ratio*5, 0.f));
+		sprite->addKeyframe(MOVE_LEFT, glm::vec2(1-ratio*6, 0.f));
+		sprite->addKeyframe(MOVE_LEFT, glm::vec2(1-ratio*7, 0.f));
+		sprite->addKeyframe(MOVE_LEFT, glm::vec2(1-ratio*8, 0.f));
+		sprite->addKeyframe(MOVE_LEFT, glm::vec2(1-ratio*9, 0.f));
+		// sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.f));
+		// sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.25f));
+		// sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.5f));
 		
 		sprite->setAnimationSpeed(MOVE_RIGHT, 8);
-		sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.f));
-		sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.25f));
-		sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.25, 0.5f));
+		// sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.f, 0.f));
+		// sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.f, ratio));
+		sprite->addKeyframe(MOVE_RIGHT, glm::vec2(ratio*2, 0.f));
+		sprite->addKeyframe(MOVE_RIGHT, glm::vec2(ratio*3, 0.f));
+		sprite->addKeyframe(MOVE_RIGHT, glm::vec2(ratio*4, 0.f));
+		sprite->addKeyframe(MOVE_RIGHT, glm::vec2(ratio*5, 0.f));
+		sprite->addKeyframe(MOVE_RIGHT, glm::vec2(ratio*6, 0.f));
+		sprite->addKeyframe(MOVE_RIGHT, glm::vec2(ratio*7, 0.f));
+		sprite->addKeyframe(MOVE_RIGHT, glm::vec2(ratio*8, 0.f));
+		sprite->addKeyframe(MOVE_RIGHT, glm::vec2(ratio*9, 0.f));
+		// sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.f, ratio*10));
 		
 	sprite->changeAnimation(0);
 	tileMapDispl = tileMapPos;
