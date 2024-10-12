@@ -20,7 +20,7 @@ private:
 	TileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program);
 
 public:
-	// Tile maps can only be created inside an OpenGL context
+	// Tile maps can only be created inside an OpenG  L context
 	static TileMap *createTileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program);
 
 	~TileMap();

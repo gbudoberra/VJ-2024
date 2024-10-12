@@ -30,7 +30,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 		sprite->setAnimationSpeed(STAND_RIGHT, 8);
 		sprite->addKeyframe(STAND_RIGHT, glm::vec2(0.f, 0.f));
 		
-		sprite->setAnimationSpeed(MOVE_LEFT, 20);
+		sprite->setAnimationSpeed(MOVE_LEFT, 10);
 		sprite->addKeyframe(MOVE_LEFT, glm::vec2(1-ratio*2, 0.f));
 		sprite->addKeyframe(MOVE_LEFT, glm::vec2(1-ratio*3, 0.f));
 		sprite->addKeyframe(MOVE_LEFT, glm::vec2(1-ratio*4, 0.f));
@@ -43,7 +43,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 		// sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.25f));
 		// sprite->addKeyframe(MOVE_LEFT, glm::vec2(0.f, 0.5f));
 		
-		sprite->setAnimationSpeed(MOVE_RIGHT, 8);
+		sprite->setAnimationSpeed(MOVE_RIGHT, 10);
 		// sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.f, 0.f));
 		// sprite->addKeyframe(MOVE_RIGHT, glm::vec2(0.f, ratio));
 		sprite->addKeyframe(MOVE_RIGHT, glm::vec2(ratio*2, 0.f));
@@ -65,7 +65,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 void Player::update(int deltaTime)
 {
 	sprite->update(deltaTime);
-	if(Game::instance().getKey(GLFW_KEY_LEFT))
+	if(Game::instance().getKey(GLFW_KEY_A))
 	{
 		if(sprite->animation() != MOVE_LEFT)
 			sprite->changeAnimation(MOVE_LEFT);
@@ -76,7 +76,7 @@ void Player::update(int deltaTime)
 			sprite->changeAnimation(STAND_LEFT);
 		}
 	}
-	else if(Game::instance().getKey(GLFW_KEY_RIGHT))
+	else if(Game::instance().getKey(GLFW_KEY_D))
 	{
 		if(sprite->animation() != MOVE_RIGHT)
 			sprite->changeAnimation(MOVE_RIGHT);
@@ -115,7 +115,7 @@ void Player::update(int deltaTime)
 		posPlayer.y += FALL_STEP;
 		if(map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y))
 		{
-			if(Game::instance().getKey(GLFW_KEY_UP))
+			if(Game::instance().getKey(GLFW_KEY_W))
 			{
 				bJumping = true;
 				jumpAngle = 0;

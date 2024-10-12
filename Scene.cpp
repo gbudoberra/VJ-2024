@@ -5,8 +5,8 @@
 #include "Game.h"
 
 
-#define SCREEN_X 32
-#define SCREEN_Y 16
+#define SCREEN_X 10
+#define SCREEN_Y 5
 
 #define INIT_PLAYER_X_TILES 4
 #define INIT_PLAYER_Y_TILES 25
@@ -41,8 +41,19 @@ void Scene::init()
 
 void Scene::update(int deltaTime)
 {
-	currentTime += deltaTime;
-	player->update(deltaTime);
+    currentTime += deltaTime;
+    player->update(deltaTime);
+
+    // Update camera to follow the player
+    glm::vec2 playerPos = player->posPlayer;
+    float camX = playerPos.x - SCREEN_WIDTH / 10.0f;
+    float camY = playerPos.y - SCREEN_HEIGHT / 2.0f;
+
+    // Ensure the camera doesn't go outside the bounds of the map
+    // camX = std::max(0.0f, std::min(camX, map->getMapWidth() * map->getTileSize() - SCREEN_WIDTH));
+    // camY = std::max(0.0f, std::min(camY, map->getMapHeight() * map->getTileSize() - SCREEN_HEIGHT));
+
+    projection = glm::ortho(camX, camX + SCREEN_WIDTH, camY + SCREEN_HEIGHT, camY);
 }
 
 void Scene::render()
