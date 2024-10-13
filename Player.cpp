@@ -8,6 +8,7 @@
 #define JUMP_ANGLE_STEP 4
 #define JUMP_HEIGHT 96
 #define FALL_STEP 4
+#define PLAYER_ACCEL 0.00925f
 
 
 enum PlayerAnims
@@ -87,26 +88,36 @@ void Player::update(int deltaTime)
 	sprite->update(deltaTime);
 	if(Game::instance().getKey(GLFW_KEY_A))
 	{
-		if(sprite->animation() != MOVE_LEFT)
+		if(sprite->animation() != MOVE_LEFT){
 			sprite->changeAnimation(MOVE_LEFT);
-		posPlayer.x -= 2;
+			velocity = 0;
+		}
+		if (velocity > -0.125f)
+			velocity -= PLAYER_ACCEL;
+		printf("velocity: %f deltaTime: %d deltaX: %f\n", velocity, deltaTime, velocity*deltaTime);
+		posPlayer.x += velocity*deltaTime;
+		// posPlayer.x -= 2;
 		if(map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32)))
 		{
-			posPlayer.x += 2;
+			posPlayer.x -= velocity*deltaTime;
+			velocity = 0;
 			sprite->changeAnimation(STAND_LEFT);
-			printf("1-collision left -> STAND_LEFT\n");
 		}
 	}
 	else if(Game::instance().getKey(GLFW_KEY_D))
 	{
-		if(sprite->animation() != MOVE_RIGHT)
+		if(sprite->animation() != MOVE_RIGHT){
 			sprite->changeAnimation(MOVE_RIGHT);
-		posPlayer.x += 2;
+			velocity = 0;
+		}
+		if (velocity < 0.125f)
+			velocity += PLAYER_ACCEL;
+		posPlayer.x += velocity*deltaTime;
 		if(map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
 		{
-			posPlayer.x -= 2;
+			posPlayer.x -= velocity*deltaTime;
+			velocity = 0;
 			sprite->changeAnimation(STAND_RIGHT);
-			printf("2-collision right -> STAND_RIGHT\n");
 		}
 	}
 	else if (Game::instance().getKey(GLFW_KEY_S)){
@@ -119,12 +130,11 @@ void Player::update(int deltaTime)
 	{
 		if(sprite->animation() == MOVE_LEFT){
 			sprite->changeAnimation(STAND_LEFT);
-			printf("3-else -> STAND_LEFT\n");
 		}
 		else if(sprite->animation() == MOVE_RIGHT){
 			sprite->changeAnimation(STAND_RIGHT);
-			printf("4-else -> STAND_RIGHT\n");	
 		}
+		velocity = 0;
 	}
 	
 	if(bJumping)
@@ -135,13 +145,10 @@ void Player::update(int deltaTime)
 			// set animation stand
 			if(sprite->animation() == FALL_LEFT){
 				sprite->changeAnimation(STAND_LEFT);
-				printf("5-fall -> STAND_LEFT\n");
 			}
 			else if(sprite->animation() == FALL_RIGHT){
 				sprite->changeAnimation(STAND_RIGHT);
-				printf("6-fall -> STAND_RIGHT\n");
 			}
-			// printf("1-jumpAngle = %d\n", jumpAngle);
 			bJumping = false;
 			posPlayer.y = startY;
 		}
@@ -156,11 +163,10 @@ void Player::update(int deltaTime)
 
 			if(jumpAngle > 90){
 				// set animation fall
-				if(sprite->animation() == JUMP_LEFT)
+				if(sprite->animation() == JUMP_LEFT || sprite->animation() == MOVE_LEFT)
 					sprite->changeAnimation(FALL_LEFT);
-				else if(sprite->animation() == JUMP_RIGHT)
+				else if(sprite->animation() == JUMP_RIGHT || sprite->animation() == MOVE_RIGHT)
 					sprite->changeAnimation(FALL_RIGHT);
-				// printf("3-jumpAngle = %d\n", jumpAngle);
 				bJumping = !map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
 			}
 		}
@@ -168,7 +174,6 @@ void Player::update(int deltaTime)
 	else
 	{
 		posPlayer.y += FALL_STEP;
-		// printf("4-posPlayer.y = %d\n", posPlayer.y);
 		if(map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y))
 		{
 			if(Game::instance().getKey(GLFW_KEY_W))
@@ -176,6 +181,14 @@ void Player::update(int deltaTime)
 				bJumping = true;
 				jumpAngle = 0;
 				startY = posPlayer.y;
+			}
+			else if(!Game::instance().getKey(GLFW_KEY_A) && !Game::instance().getKey(GLFW_KEY_D)){
+				if (sprite->animation() == MOVE_LEFT || sprite->animation() == FALL_LEFT){
+					sprite->changeAnimation(STAND_LEFT);
+				}
+				else if (sprite->animation() == MOVE_RIGHT || sprite->animation() == FALL_RIGHT){
+					sprite->changeAnimation(STAND_RIGHT);
+				}
 			}
 		}
 	}
