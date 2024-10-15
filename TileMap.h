@@ -14,7 +14,7 @@
 
 
 class TileMap
-{
+{ 
 
 private:
 	TileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program);
