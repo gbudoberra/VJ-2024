@@ -17,7 +17,8 @@ enum PlayerAnims
 	MOVE_LEFT, MOVE_RIGHT, 
 	JUMP_LEFT, JUMP_RIGHT,
 	FALL_LEFT, FALL_RIGHT,
-	DOWN_LEFT, DOWN_RIGHT
+	DOWN_LEFT, DOWN_RIGHT,
+	SUPER_FALL_LEFT, SUPER_FALL_RIGHT
 };
 
 
@@ -76,6 +77,12 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 		sprite->setAnimationSpeed(DOWN_LEFT, 2);
 		sprite->addKeyframe(DOWN_LEFT, glm::vec2(1-ratioX, 0.05f));
 		sprite->addKeyframe(DOWN_LEFT, glm::vec2(1-ratioX*2, 0.05f));
+
+		sprite->setAnimationSpeed(SUPER_FALL_RIGHT, 1);
+		sprite->addKeyframe(SUPER_FALL_RIGHT, glm::vec2(ratioX*6, 0.05f));
+
+		sprite->setAnimationSpeed(SUPER_FALL_LEFT, 1);
+		sprite->addKeyframe(SUPER_FALL_LEFT, glm::vec2(1-ratioX*7, 0.05f));
 		
 	sprite->changeAnimation(0);
 	tileMapDispl = tileMapPos;
@@ -140,17 +147,10 @@ void Player::update(int deltaTime)
 		jumpAngle += JUMP_ANGLE_STEP;
 		if(jumpAngle == 180)
 		{
-			// set animation stand -> reached the same point
-			// if(sprite->animation() == FALL_LEFT && ){
-			// 	sprite->changeAnimation(STAND_LEFT);
-			// }
-			// else if(sprite->animation() == FALL_RIGHT){
-			// 	sprite->changeAnimation(STAND_RIGHT);
-			// }
 			if(map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y)){
-				if(sprite->animation() == JUMP_LEFT || sprite->animation() == MOVE_LEFT || sprite->animation() == FALL_LEFT)
+				if(sprite->animation() == JUMP_LEFT || sprite->animation() == MOVE_LEFT || sprite->animation() == FALL_LEFT || sprite->animation() == SUPER_FALL_LEFT)
 					sprite->changeAnimation(STAND_LEFT);
-				else if (sprite->animation() == JUMP_RIGHT || sprite->animation() == MOVE_RIGHT || sprite->animation() == FALL_RIGHT)
+				else if (sprite->animation() == JUMP_RIGHT || sprite->animation() == MOVE_RIGHT || sprite->animation() == FALL_RIGHT || sprite->animation() == SUPER_FALL_RIGHT)
 					sprite->changeAnimation(STAND_RIGHT);
 			}
 			bJumping = false;
@@ -161,24 +161,33 @@ void Player::update(int deltaTime)
 			posPlayer.y = int(startY - 96 * sin(3.14159f * jumpAngle / 180.f));
 			if (jumpAngle > 0 && jumpAngle < 90){
 				// JUMPING -> air
-				if(Game::instance().getKey(GLFW_KEY_A) || sprite->animation() == STAND_LEFT || sprite->animation() == MOVE_LEFT || sprite->animation() == JUMP_LEFT)
+				if(Game::instance().getKey(GLFW_KEY_A) || sprite->animation() == STAND_LEFT || sprite->animation() == MOVE_LEFT || sprite->animation() == JUMP_LEFT){
 					sprite->changeAnimation(JUMP_LEFT);
-				else
+				}
+				else if (Game::instance().getKey(GLFW_KEY_D) || sprite->animation() == STAND_RIGHT || sprite->animation() == MOVE_RIGHT || sprite->animation() == JUMP_RIGHT){
 					sprite->changeAnimation(JUMP_RIGHT);
+				}
+				// printf("llego?\n");
+				if (Game::instance().getKey(GLFW_KEY_S)){
+					sprite->changeAnimation(SUPER_FALL_RIGHT);
+				}
 			}
-
 			if(jumpAngle > 90){
 				// set animation fall
-				if(sprite->animation() == JUMP_LEFT || sprite->animation() == MOVE_LEFT)
+				if (Game::instance().getKey(GLFW_KEY_S)){
+					sprite->changeAnimation(SUPER_FALL_RIGHT);
+				}
+				if(sprite->animation() == JUMP_LEFT || sprite->animation() == MOVE_LEFT){
 					sprite->changeAnimation(FALL_LEFT);
+				}
 				else if(sprite->animation() == JUMP_RIGHT || sprite->animation() == MOVE_RIGHT)
 					sprite->changeAnimation(FALL_RIGHT);
 
 				bJumping = !map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
 				if(map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y)){
-					if(sprite->animation() == FALL_LEFT)
+					if(sprite->animation() == FALL_LEFT || sprite->animation() == SUPER_FALL_LEFT)
 						sprite->changeAnimation(STAND_LEFT);
-					else if(sprite->animation() == FALL_RIGHT)
+					else if(sprite->animation() == FALL_RIGHT || sprite->animation() == SUPER_FALL_RIGHT)
 						sprite->changeAnimation(STAND_RIGHT);
 				}
 			}
@@ -191,15 +200,21 @@ void Player::update(int deltaTime)
 		{
 			if(Game::instance().getKey(GLFW_KEY_W))
 			{
-				bJumping = true;
-				jumpAngle = 0;
-				startY = posPlayer.y;
+				if(sprite->animation() == DOWN_LEFT)
+					sprite->changeAnimation(STAND_LEFT);
+				else if(sprite->animation() == DOWN_RIGHT)
+					sprite->changeAnimation(STAND_RIGHT);
+				else{
+					bJumping = true;
+					jumpAngle = 0;
+					startY = posPlayer.y;
+				}
 			}
 			else if(!Game::instance().getKey(GLFW_KEY_A) && !Game::instance().getKey(GLFW_KEY_D)){
 				if (sprite->animation() == MOVE_LEFT || sprite->animation() == FALL_LEFT){
 					sprite->changeAnimation(STAND_LEFT);
 				}
-				else if (sprite->animation() == MOVE_RIGHT || sprite->animation() == FALL_RIGHT){
+				else if (sprite->animation() == MOVE_RIGHT || sprite->animation() == FALL_RIGHT || sprite->animation() == SUPER_FALL_RIGHT || sprite->animation() == JUMP_RIGHT){
 					sprite->changeAnimation(STAND_RIGHT);
 				}
 			}
